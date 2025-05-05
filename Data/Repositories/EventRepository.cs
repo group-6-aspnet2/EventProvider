@@ -1,0 +1,129 @@
+﻿using Data.Contexts;
+using Domain.Responses;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Linq.Expressions;
+
+namespace Data.Repositories;
+
+public interface IEventRepository<TEntity> where TEntity : class
+{
+    Task<ResponseResult> CreateAsync(TEntity entity);
+    Task<ResponseResult> GetAsync(Expression<Func<TEntity, bool>> expression);
+    Task<ResponseResult<IEnumerable<TEntity>>> GetAllAsync(Expression<Func<TEntity, bool>> expression);
+    Task<ResponseResult> UpdateAsync(TEntity entity);
+    Task<ResponseResult> DeleteAsync(Expression<Func<TEntity, bool>> expression);
+}
+
+
+public abstract class EventRepository<TEntity> : IEventRepository<TEntity> where TEntity : class
+{
+    protected readonly DataContext _context;
+    protected readonly DbSet<TEntity> _dbSet;
+
+    protected EventRepository(DataContext context, DbSet<TEntity> dbSet)
+    {
+        _context = context;
+        _dbSet = _context.Set<TEntity>();
+    }
+
+    public async Task<ResponseResult> CreateAsync(TEntity entity)
+    {
+        try
+        {
+            if (entity == null)
+                return new ResponseResult { Success = false, StatusCode = 400, Error = "Entity cannot be null" };
+
+            _dbSet.Add(entity);
+            await _context.SaveChangesAsync();
+            return new ResponseResult { Success = true, StatusCode = 201 };
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return new ResponseResult { Success = false, StatusCode = 500, Error = "An error occurred while creating the entity" };
+        }
+    }
+
+
+    public async Task<ResponseResult<IEnumerable<TEntity>>> GetAllAsync(Expression<Func<TEntity, bool>> expression)
+    {
+        try
+        {
+            if (expression == null)
+                return new ResponseResult<IEnumerable<TEntity>> { Success = false, StatusCode = 400, Error = "Expression cannot be null" };
+
+            var entities = await _dbSet.Where(expression).ToListAsync();
+            return new ResponseResult<IEnumerable<TEntity>> { Success = true, StatusCode = 200, Data = entities };
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return new ResponseResult<IEnumerable<TEntity>> { Success = false, StatusCode = 500, Error = "An error occurred while retrieving the entities" };
+        }
+    }
+
+    public async Task<ResponseResult> GetAsync(Expression<Func<TEntity, bool>> expression)
+    {
+        try
+        {
+            if (expression == null)
+                return new ResponseResult { Success = false, StatusCode = 400, Error = "Expression cannot be null" };
+
+            var entity = await _dbSet.FirstOrDefaultAsync(expression);
+            if (entity == null)
+                return new ResponseResult { Success = false, StatusCode = 404, Error = "Entity not found" };
+
+            return new ResponseResult { Success = true, StatusCode = 200 };
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return new ResponseResult { Success = false, StatusCode = 500, Error = "An error occurred while retrieving the entity" };
+        }
+    }
+
+    public async Task<ResponseResult> UpdateAsync(TEntity entity)
+    {
+        try
+        {
+            if (entity == null)
+                return new ResponseResult { Success = false, StatusCode = 400, Error = "Expression cannot be null" };
+
+            if (await _dbSet.ContainsAsync(entity))
+                return new ResponseResult { Success = false, StatusCode = 404, Error = "Entity not found" };
+
+            _dbSet.Update(entity);
+            await _context.SaveChangesAsync();
+            return new ResponseResult { Success = true, StatusCode = 200 };
+
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return new ResponseResult { Success = false, StatusCode = 500, Error = "An error occurred while updating the entity" };
+        }
+    }
+
+    public async Task<ResponseResult> DeleteAsync(Expression<Func<TEntity, bool>> expression)
+    {
+        try {
+            if (expression == null)
+                return new ResponseResult { Success = false, StatusCode = 400, Error = "Expression cannot be null" };
+
+            var entity = await _dbSet.FirstOrDefaultAsync(expression);
+            if (entity == null)
+                return new ResponseResult { Success = false, StatusCode = 404, Error = "Entity not found" };
+
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
+            return new ResponseResult { Success = true, StatusCode = 200 };
+
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return new ResponseResult { Success = false, StatusCode = 500, Error = "An error occurred while deleting the entity" };
+        }
+    }   
+}
