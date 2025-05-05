@@ -5,20 +5,20 @@ namespace Buisness.Models;
 public class EventRegistrationForm
 {
     [Required]
-    string EventName { get; set; } = null!;
+    public string EventName { get; set; } = null!;
 
     [Required]
-    string EventCategory { get; set; } = null!;
+    public string EventCategory { get; set; } = null!;
 
     [Required]
-    string EventLocation { get; set; } = null!;
+    public string EventLocation { get; set; } = null!;
 
     [Required]
-    DateTime EventDate { get; set; }
+    public DateTime EventDate { get; set; }
 
     [Required]
-    TimeOnly EventTime { get; set; }
+    public TimeOnly EventTime { get; set; }
 
     [Required]
-    int EventAmountOfGuests { get; set; }
+    public Int32 EventAmountOfGuests { get; set; }
 }

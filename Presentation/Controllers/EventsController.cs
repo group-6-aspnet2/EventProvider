@@ -1,4 +1,4 @@
-﻿using EventGrpcService;
+﻿using EventGrpcContract;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers

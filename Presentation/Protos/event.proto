@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "EventGrpcService";
+option csharp_namespace = "EventGrpcContract";
 
 package event;
 
@@ -19,7 +19,7 @@ message CreateEventRequest {
   string event_location = 3;
   string event_date = 4;
   string event_time = 5;
-  string event_amount_of_guests = 6;
+  int32 event_amount_of_guests = 6;
 }
 
 message CreateEventReply {
@@ -58,7 +58,8 @@ message Event {
   string event_date = 5;
     // Tid på formatet "HH:mm", exempel: "14:30"
   string event_time = 6;
-  string event_amount_of_guests = 7;
+  string event_status = 7;
+  int32 event_amount_of_guests = 8;
 }
 
 //UPDATEEVENT
@@ -69,7 +70,8 @@ message UpdateEventRequest {
   string event_location = 4;
   string event_date = 5;
   string event_time = 6;
-  string event_amount_of_guests = 7;
+  string event_status = 7;
+  int32 event_amount_of_guests = 8;
 }
 
 message UpdateEventReply {

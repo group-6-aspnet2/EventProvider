@@ -17,7 +17,7 @@ namespace Data.Migrations
                 {
                     EventId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EventName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EventCategory = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EventCategoryName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EventLocation = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EventDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EventTime = table.Column<TimeOnly>(type: "time", nullable: false),

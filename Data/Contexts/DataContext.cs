@@ -1,7 +1,7 @@
 ﻿using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Data.DataContext;
+namespace Data.Contexts;
 
 public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
 {

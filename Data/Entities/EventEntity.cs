@@ -19,5 +19,5 @@ public class EventEntity
 
     public string? EventStatus { get; set; }
 
-    public string EventAmountOfGuests { get; set; } = null!;
+    public Int32 EventAmountOfGuests { get; set; }
 }

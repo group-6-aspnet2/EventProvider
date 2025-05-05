@@ -1,12 +1,12 @@
-﻿using Data.DataContext;
+﻿using Data.Contexts;
 using Data.Entities;
-using EventGrpcService;
+using EventGrpcContract;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 
 namespace Presentation.Services;
 
-public class EventGrpcService(DataContext context) : EventContract.EventContractBase
+public class EventGrpcContract(DataContext context) : EventContract.EventContractBase
 {
     private readonly DataContext _context = context;
 
@@ -25,7 +25,7 @@ public class EventGrpcService(DataContext context) : EventContract.EventContract
         var newEvent = new EventEntity
         {
             EventName = request.EventName,
-            EventCategoryName = request.EventCategory,
+            EventCategoryName = request.EventCategoryName,
             EventLocation = request.EventLocation,
             EventDate = DateTime.Parse(request.EventDate),
             EventTime = TimeOnly.Parse(request.EventTime),
@@ -38,7 +38,8 @@ public class EventGrpcService(DataContext context) : EventContract.EventContract
         return new CreateEventReply
         {
             Succeeded = true,
-            Message = "Event was created."
+            Message = "Event was created.",
+            EventId = newEvent.EventId
         };
     }   
     
@@ -50,14 +51,28 @@ public class EventGrpcService(DataContext context) : EventContract.EventContract
             return new GetEventByIdReply
             {
                 Succeeded = false,
-                Message = "Event not found."
+                Message = "Event not found.",
+                Event = null
             };
         }
+
+        var eventReply = new Event
+        {
+            EventId = getEvent.EventId,
+            EventName = getEvent.EventName,
+            EventCategoryName = getEvent.EventCategoryName,
+            EventLocation = getEvent.EventLocation,
+            EventDate = getEvent.EventDate.ToString("yyyy-MM-dd"),
+            EventTime = getEvent.EventTime.ToString("HH:mm"),
+            EventStatus = getEvent.EventStatus,
+            EventAmountOfGuests = getEvent.EventAmountOfGuests
+        };
+
         return new GetEventByIdReply
         {
             Succeeded = true,
             Message = "Event was found.",
-            Event 
+            Event = eventReply
         };
     }
 
@@ -72,11 +87,14 @@ public class EventGrpcService(DataContext context) : EventContract.EventContract
                 Message = "Event not found."
             };
         }
+            
+            updateEvent.EventId = request.EventId;
             updateEvent.EventName = request.EventName;
-            updateEvent.EventCategoryName = request.EventCategory;
+            updateEvent.EventCategoryName = request.EventCategoryName;
             updateEvent.EventLocation = request.EventLocation;
             updateEvent.EventDate = DateTime.Parse(request.EventDate);
             updateEvent.EventTime = TimeOnly.Parse(request.EventTime);
+            updateEvent.EventStatus = request.EventStatus;
             updateEvent.EventAmountOfGuests = request.EventAmountOfGuests;
             await _context.SaveChangesAsync();
         

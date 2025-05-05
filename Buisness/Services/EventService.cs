@@ -1,5 +1,5 @@
-﻿using Data.DataContext;
-using EventGrpcService;
+﻿using Data.Contexts;
+using EventGrpcContract;
 
 namespace Buisness.Services;
 
