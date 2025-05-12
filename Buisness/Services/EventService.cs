@@ -5,8 +5,6 @@ using Data.Repositories;
 using Domain.Extensions;
 using Domain.Models;
 using Domain.Responses;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System.Diagnostics;
 
 namespace Buisness.Services;
 
@@ -37,7 +35,7 @@ public class EventService(IEventRepository eventRepository, DataContext context)
             await _context.SaveChangesAsync();
 
             var eventModel = eventEntity.MapTo<Event>();
-            return new ResponseResult<Event> { Success = true, StatusCode = 201, Data = eventModel
+            return new ResponseResult<Event> { Success = true, StatusCode = 201, Result = eventModel
             };
         }
         catch (Exception ex)
@@ -56,7 +54,7 @@ public class EventService(IEventRepository eventRepository, DataContext context)
                 return new ResponseResult<Event> { Success = false, StatusCode = 404, Error = "Event not found" };
 
             var eventModel = entity.MapTo<Event>();
-            return new ResponseResult<Event> { Success = true, StatusCode = 200, Data = eventModel };
+            return new ResponseResult<Event> { Success = true, StatusCode = 200, Result = eventModel };
         }
         catch (Exception ex)
         {
@@ -74,8 +72,8 @@ public class EventService(IEventRepository eventRepository, DataContext context)
             if (!result.Success)
                 return new ResponseResult<IEnumerable<Event>> { Success = false, StatusCode = result.StatusCode, Error = result.Error };
 
-            var events = result.Data?.Select(x => x.MapTo<Event>()) ?? Enumerable.Empty<Event>();
-            return new ResponseResult<IEnumerable<Event>> { Success = true, StatusCode = 200, Data = events };
+            var events = result.Result?.Select(x => x.MapTo<Event>()) ?? Enumerable.Empty<Event>();
+            return new ResponseResult<IEnumerable<Event>> { Success = true, StatusCode = 200, Result = events };
         }
         catch (Exception ex)
         {

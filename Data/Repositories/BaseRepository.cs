@@ -54,7 +54,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
                 return new ResponseResult<IEnumerable<TEntity>> { Success = false, StatusCode = 400, Error = "Expression cannot be null" };
 
             var entities = await _dbSet.Where(expression).ToListAsync();
-            return new ResponseResult<IEnumerable<TEntity>> { Success = true, StatusCode = 200, Data = entities };
+            return new ResponseResult<IEnumerable<TEntity>> { Success = true, StatusCode = 200, Result = entities };
         }
         catch (Exception ex)
         {

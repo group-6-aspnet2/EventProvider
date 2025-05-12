@@ -14,5 +14,7 @@ public class EventRegistrationForm
 
     public TimeOnly EventTime { get; set; }
 
+    public string EventStatus { get; set; } = null!;
+
     public Int32 EventAmountOfGuests { get; set; }
 }

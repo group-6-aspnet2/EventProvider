@@ -24,11 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Buisness\Buisness.csproj" />
     <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\event.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\event.proto" GrpcServices="Both" /> 
   </ItemGroup>
 
 </Project>

@@ -11,5 +11,5 @@ public class ResponseResult
 
 public class ResponseResult<T> : ResponseResult
 {
-    public T? Data { get; set; }
+    public T? Result { get; set; }
 }

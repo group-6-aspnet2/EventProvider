@@ -20,6 +20,7 @@ message CreateEventRequest {
   string event_date = 4;
   string event_time = 5;
   int32 event_amount_of_guests = 6;
+  string event_status = 7;
 }
 
 message CreateEventReply {

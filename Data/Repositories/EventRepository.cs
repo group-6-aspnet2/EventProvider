@@ -18,7 +18,7 @@ public class EventRepository(DataContext context) : BaseRepository<EventEntity>(
         try
         {
             var entities = await _dbSet.ToListAsync();
-            return new ResponseResult<IEnumerable<EventEntity>> { Success = true, StatusCode = 200, Data = entities };
+            return new ResponseResult<IEnumerable<EventEntity>> { Success = true, StatusCode = 200, Result = entities };
         }
         catch (Exception ex)
         {

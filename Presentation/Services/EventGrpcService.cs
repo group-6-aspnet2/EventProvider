@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Presentation.Services;
 
-public class EventGrpcContract(DataContext context) : EventContract.EventContractBase
+public class EventGrpcService(DataContext context) : EventContract.EventContractBase
 {
     private readonly DataContext _context = context;
 
@@ -24,12 +24,14 @@ public class EventGrpcContract(DataContext context) : EventContract.EventContrac
 
         var newEvent = new EventEntity
         {
+            EventId = Guid.NewGuid().ToString(),
             EventName = request.EventName,
             EventCategoryName = request.EventCategoryName,
             EventLocation = request.EventLocation,
             EventDate = DateTime.Parse(request.EventDate),
             EventTime = TimeOnly.Parse(request.EventTime),
-            EventAmountOfGuests = request.EventAmountOfGuests
+            EventAmountOfGuests = request.EventAmountOfGuests,
+            EventStatus = request.EventStatus
         };
 
         await _context.Events.AddAsync(newEvent);
@@ -74,6 +76,39 @@ public class EventGrpcContract(DataContext context) : EventContract.EventContrac
             Message = "Event was found.",
             Event = eventReply
         };
+    }
+
+    public override async Task<GetAllEventsReply> GetAllEvents(GetAllEventsRequest request, ServerCallContext callContext)
+    {
+        var events = await _context.Events.ToListAsync();
+
+        var reply = new GetAllEventsReply();
+        if (events.Count == 0)
+        {
+            reply.Succeeded = false;
+            reply.Message = "No events found.";
+            return reply;
+        }
+
+        foreach (var eventEntity in events)
+        {
+            reply.Events.Add(new Event
+            {
+                EventId = eventEntity.EventId,
+                EventName = eventEntity.EventName,
+                EventCategoryName = eventEntity.EventCategoryName,
+                EventLocation = eventEntity.EventLocation,
+                EventDate = eventEntity.EventDate.ToString("yyyy-MM-dd"),
+                EventTime = eventEntity.EventTime.ToString("HH:mm"),
+                EventStatus = eventEntity.EventStatus,
+                EventAmountOfGuests = eventEntity.EventAmountOfGuests
+            });
+        }
+
+        reply.Succeeded = true;
+        reply.Message = "Events retrieved successfully.";
+
+        return reply;
     }
 
     public override async Task<UpdateEventReply> UpdateEvent(UpdateEventRequest request, ServerCallContext callContext)
