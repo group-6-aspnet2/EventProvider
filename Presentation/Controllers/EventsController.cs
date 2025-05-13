@@ -43,7 +43,7 @@ namespace Presentation.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetEventById(string id, GetEventByIdRequest getRequest)
+        public async Task<IActionResult> GetEventById(string id)
         {
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
