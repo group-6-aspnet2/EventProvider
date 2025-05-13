@@ -43,11 +43,11 @@ public class EventGrpcService(DataContext context) : EventContract.EventContract
             Message = "Event was created.",
             EventId = newEvent.EventId
         };
-    }   
-    
+    }
+
     public override async Task<GetEventByIdReply> GetEventById(GetEventByIdRequest request, ServerCallContext callContext)
     {
-        var getEvent = await _context.Events.FindAsync(request.EventId);
+        var getEvent = await _context.Events.FirstOrDefaultAsync(x => x.EventId == request.EventId);
         if (getEvent == null)
         {
             return new GetEventByIdReply
@@ -67,7 +67,7 @@ public class EventGrpcService(DataContext context) : EventContract.EventContract
             EventDate = getEvent.EventDate.ToString("yyyy-MM-dd"),
             EventTime = getEvent.EventTime.ToString("HH:mm"),
             EventStatus = getEvent.EventStatus,
-            EventAmountOfGuests = getEvent.EventAmountOfGuests
+            EventAmountOfGuests = getEvent.EventAmountOfGuests,
         };
 
         return new GetEventByIdReply
@@ -76,8 +76,9 @@ public class EventGrpcService(DataContext context) : EventContract.EventContract
             Message = "Event was found.",
             Event = eventReply
         };
-    }
 
+
+    }
     public override async Task<GetAllEventsReply> GetAllEvents(GetAllEventsRequest request, ServerCallContext callContext)
     {
         var events = await _context.Events.ToListAsync();
@@ -122,17 +123,17 @@ public class EventGrpcService(DataContext context) : EventContract.EventContract
                 Message = "Event not found."
             };
         }
-            
-            updateEvent.EventId = request.EventId;
-            updateEvent.EventName = request.EventName;
-            updateEvent.EventCategoryName = request.EventCategoryName;
-            updateEvent.EventLocation = request.EventLocation;
-            updateEvent.EventDate = DateTime.Parse(request.EventDate);
-            updateEvent.EventTime = TimeOnly.Parse(request.EventTime);
-            updateEvent.EventStatus = request.EventStatus;
-            updateEvent.EventAmountOfGuests = request.EventAmountOfGuests;
-            await _context.SaveChangesAsync();
-        
+
+        updateEvent.EventId = request.EventId;
+        updateEvent.EventName = request.EventName;
+        updateEvent.EventCategoryName = request.EventCategoryName;
+        updateEvent.EventLocation = request.EventLocation;
+        updateEvent.EventDate = DateTime.Parse(request.EventDate);
+        updateEvent.EventTime = TimeOnly.Parse(request.EventTime);
+        updateEvent.EventStatus = request.EventStatus;
+        updateEvent.EventAmountOfGuests = request.EventAmountOfGuests;
+        await _context.SaveChangesAsync();
+
         return new UpdateEventReply
         {
             Succeeded = true,
@@ -161,4 +162,5 @@ public class EventGrpcService(DataContext context) : EventContract.EventContract
             Message = "Event was deleted."
         };
     }
+
 }
