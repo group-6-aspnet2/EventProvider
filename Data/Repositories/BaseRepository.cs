@@ -1,4 +1,5 @@
 ﻿using Data.Contexts;
+using Data.Entities;
 using Domain.Responses;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ namespace Data.Repositories;
 public interface IBaseRepository<TEntity> where TEntity : class
 {
     Task<ResponseResult> CreateAsync(TEntity entity);
-    Task<ResponseResult> GetAsync(Expression<Func<TEntity, bool>> expression);
+    Task<ResponseResult<TEntity>> GetAsync(Expression<Func<TEntity, bool>> expression);
     Task<ResponseResult<IEnumerable<TEntity>>> GetAllAsync(Expression<Func<TEntity, bool>> expression);
     Task<ResponseResult> UpdateAsync(TEntity entity);
     Task<ResponseResult> DeleteAsync(Expression<Func<TEntity, bool>> expression);
@@ -63,23 +64,23 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         }
     }
 
-    public virtual async Task<ResponseResult> GetAsync(Expression<Func<TEntity, bool>> expression)
+    public virtual async Task<ResponseResult<TEntity>> GetAsync(Expression<Func<TEntity, bool>> expression)
     {
         try
         {
             if (expression == null)
-                return new ResponseResult { Success = false, StatusCode = 400, Error = "Expression cannot be null" };
+                return new ResponseResult<TEntity> { Success = false, StatusCode = 400, Error = "Expression cannot be null" };
 
             var entity = await _dbSet.FirstOrDefaultAsync(expression);
             if (entity == null)
-                return new ResponseResult { Success = false, StatusCode = 404, Error = "Entity not found" };
+                return new ResponseResult<TEntity> { Success = false, StatusCode = 404, Error = "Entity not found" };
 
-            return new ResponseResult { Success = true, StatusCode = 200 };
+            return new ResponseResult<TEntity> { Success = true, StatusCode = 200, Result = entity};
         }
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
-            return new ResponseResult { Success = false, StatusCode = 500, Error = "An error occurred while retrieving the entity" };
+            return new ResponseResult<TEntity> { Success = false, StatusCode = 500, Error = "An error occurred while retrieving the entity" };
         }
     }
 
