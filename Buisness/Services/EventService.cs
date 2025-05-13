@@ -53,19 +53,15 @@ public class EventService(IEventRepository eventRepository, DataContext context)
             if (result == null)
                 return new ResponseResult<Event> { Success = false, StatusCode = 404, Error = "Event not found" };
 
-            var entity = result.Result!;
-            var eventModel = new Event
+            if(result.Result != null)
             {
-                EventId = entity.EventId,
-                EventName = entity.EventName,
-                EventCategory = entity.EventCategoryName,
-                EventAmountOfGuests = entity.EventAmountOfGuests,
-                EventDate = entity.EventDate,
-                EventTime = entity.EventTime,
-                EventLocation = entity.EventLocation,
-                EventStatus = entity.EventStatus,
-            };
+                var eventModel = result.Result.MapTo<Event>();
             return new ResponseResult<Event> { Success = true, StatusCode = 200, Result = eventModel };
+
+            }
+            return new ResponseResult<Event> { Success = true, StatusCode = 404 };
+
+
         }
         catch (Exception ex)
         {
