@@ -48,12 +48,23 @@ public class EventService(IEventRepository eventRepository, DataContext context)
     {
         try
         {
-            var entity = await _eventRepository.GetAsync(x => x.EventId == id);
+            var result = await _eventRepository.GetAsync(x => x.EventId == id);
 
-            if (entity == null)
+            if (result == null)
                 return new ResponseResult<Event> { Success = false, StatusCode = 404, Error = "Event not found" };
 
-            var eventModel = entity.MapTo<Event>();
+            var entity = result.Result!;
+            var eventModel = new Event
+            {
+                EventId = entity.EventId,
+                EventName = entity.EventName,
+                EventCategory = entity.EventCategoryName,
+                EventAmountOfGuests = entity.EventAmountOfGuests,
+                EventDate = entity.EventDate,
+                EventTime = entity.EventTime,
+                EventLocation = entity.EventLocation,
+                EventStatus = entity.EventStatus,
+            };
             return new ResponseResult<Event> { Success = true, StatusCode = 200, Result = eventModel };
         }
         catch (Exception ex)
