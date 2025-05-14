@@ -1,14 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Models;
+namespace Buisness.Models;
 
-public class Event
+public class EventRegistrationForm
 {
-    public string EventId { get; set; } = null!;
-
     public string EventName { get; set; } = null!;
 
-    public string EventCategoryName { get; set; } = null!;
+    public string EventCategory { get; set; } = null!;
 
     public string EventLocation { get; set; } = null!;
 
@@ -16,7 +14,7 @@ public class Event
 
     public TimeOnly EventTime { get; set; }
 
-    public Int32 EventAmountOfGuests { get; set; }
-
     public string EventStatus { get; set; } = null!;
+
+    public Int32 EventAmountOfGuests { get; set; }
 }

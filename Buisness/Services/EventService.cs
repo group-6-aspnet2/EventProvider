@@ -30,6 +30,7 @@ public class EventService(IEventRepository eventRepository, DataContext context)
                 return null!;
 
             var eventEntity = form.MapTo<EventEntity>();
+            eventEntity.EventId = Guid.NewGuid().ToString();
             
             _context.Events.Add(eventEntity);
             await _context.SaveChangesAsync();
@@ -40,6 +41,7 @@ public class EventService(IEventRepository eventRepository, DataContext context)
         }
         catch (Exception ex)
         {
+            Console.WriteLine("CreateEventAsync failed: " + ex.Message);
             return new ResponseResult<Event> { Success = false, StatusCode = 500, Error = ex.Message };
         }
     }

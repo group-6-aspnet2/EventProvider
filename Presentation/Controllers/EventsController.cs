@@ -1,41 +1,38 @@
-﻿using EventGrpcContract;
-using Microsoft.AspNetCore.Authentication.BearerToken;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
+﻿using Buisness.Models;
+using Buisness.Services;
+using EventGrpcContract;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EventsController(EventContract.EventContractClient eventClient) : ControllerBase
+    public class EventsController(IEventService eventService) : ControllerBase
     {
-        private readonly EventContract.EventContractClient _eventClient = eventClient;
+        private readonly IEventService _eventService = eventService;
 
         [HttpPost]
-        public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest createRequest)
+        public async Task<IActionResult> CreateEvent(EventRegistrationForm form)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (createRequest != null)
+            if (form != null)
             {
-                var request = new CreateEventRequest
+                var request = new EventRegistrationForm
                 {
-                    EventName = createRequest.EventName,
-                    EventCategoryName = createRequest.EventCategoryName,
-                    EventLocation = createRequest.EventLocation,
-                    EventDate = createRequest.EventDate,
-                    EventTime = createRequest.EventTime,
-                    EventAmountOfGuests = createRequest.EventAmountOfGuests,
-                    EventStatus = createRequest.EventStatus
+                    EventName = form.EventName,
+                    EventCategoryName = form.EventCategoryName,
+                    EventLocation = form.EventLocation,
+                    EventDate = form.EventDate,
+                    EventTime = form.EventTime,
+                    EventAmountOfGuests = form.EventAmountOfGuests,
+                    EventStatus = form.EventStatus
                 };
 
-                var response = await _eventClient.CreateEventAsync(request);
+                var response = await _eventService.CreateEventAsync(request);
 
-                return response.Succeeded ? Ok(response) : BadRequest(response.Message);
+                return response.Success ? Ok(response) : BadRequest(response.Result);
             }
 
             return BadRequest();
@@ -43,31 +40,31 @@ namespace Presentation.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetEventById(string id, GetEventByIdRequest getRequest)
+        public async Task<IActionResult> GetEventById(string id)
         {
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
 
-            var result = await _eventClient.GetEventByIdAsync(new GetEventByIdRequest { EventId = id });
-            if (!result.Succeeded)
+            var result = await _eventService.GetEventAsync(id);
+            if (!result.Success)
                 return NotFound();
 
-            return result.Succeeded ? Ok(result) : BadRequest(result.Message);
+            return result.Success ? Ok(result) : BadRequest(result.Result);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllEvents(GetAllEventsRequest getAllRequest)
+        public async Task<IActionResult> GetAllEvents()
         {
-            var result = await _eventClient.GetAllEventsAsync(new GetAllEventsRequest());
-            if (!result.Succeeded)
+            var result = await _eventService.GetAllEventsAsync();
+            if (!result.Success)
                 return NotFound();
 
-            return result.Succeeded ? Ok(result) : BadRequest(result.Message);
+            return result.Success ? Ok(result) : BadRequest(result.Result);
         }
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, UpdateEventRequest updateRequest)
+        public async Task<IActionResult> Update(string id, EventUpdateForm form)
         {
             var authorization = Request.Headers.Authorization[0];
 
@@ -83,24 +80,24 @@ namespace Presentation.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var eventEntity = await _eventClient.GetEventByIdAsync(new GetEventByIdRequest { EventId = id });
-            if (!eventEntity.Succeeded)
+            var eventEntity = await _eventService.GetEventAsync(id);
+            if (!eventEntity.Success)
                 return NotFound();
 
-            var request = new UpdateEventRequest
+            var request = new EventUpdateForm
             {
-                EventId = updateRequest.EventId,
-                EventName = updateRequest.EventName,
-                EventCategoryName = updateRequest.EventCategoryName,
-                EventLocation = updateRequest.EventLocation,
-                EventDate = updateRequest.EventDate,
-                EventTime = updateRequest.EventTime,
-                EventAmountOfGuests = updateRequest.EventAmountOfGuests,
-                EventStatus = updateRequest.EventStatus
+                EventId = form.EventId,
+                EventName = form.EventName,
+                EventCategoryName = form.EventCategoryName,
+                EventLocation = form.EventLocation,
+                EventDate = form.EventDate,
+                EventTime = form.EventTime,
+                EventAmountOfGuests = form.EventAmountOfGuests,
+                EventStatus = form.EventStatus
             };
 
-            var result = await _eventClient.UpdateEventAsync(updateRequest);
-            return result.Succeeded ? Ok(result) : BadRequest(result.Message);
+            var result = await _eventService.UpdateEventAsync(form);
+            return result.Success ? Ok(result) : BadRequest(result.Error);
         }
 
 
@@ -121,8 +118,8 @@ namespace Presentation.Controllers
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
 
-            var result = await _eventClient.DeleteEventAsync(new DeleteEventRequest { EventId = id });
-            return result.Succeeded ? Ok(result) : BadRequest(result.Message);
+            var result = await _eventService.DeleteEventAsync(id);
+            return result.Success ? Ok(result) : BadRequest(result.Error);
         }
     }
 }

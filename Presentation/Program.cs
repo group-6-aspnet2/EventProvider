@@ -29,12 +29,12 @@ builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configura
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 
-builder.Services.AddTransient<Presentation.Services.EventGrpcService>();
+builder.Services.AddTransient<EventGrpcService>();
 
-builder.Services.AddGrpcClient<EventContract.EventContractClient>(options =>
-{
-    options.Address = new Uri(builder.Configuration["GrpcSettings:EventSettingUrl"]!);
-});
+//builder.Services.AddGrpcClient<EventContract.EventContractClient>(options =>
+//{
+//    options.Address = new Uri(builder.Configuration["GrpcSettings:EventSettingUrl"]!);
+//});
 
 
 var app = builder.Build();

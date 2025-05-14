@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Models;
+namespace Buisness.Models;
 
-public class Event
+public class EventUpdateForm
 {
     public string EventId { get; set; } = null!;
 
     public string EventName { get; set; } = null!;
 
-    public string EventCategoryName { get; set; } = null!;
+    public string EventCategory { get; set; } = null!;
 
     public string EventLocation { get; set; } = null!;
 
