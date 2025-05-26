@@ -1,7 +1,6 @@
 using Buisness.Services;
 using Data.Contexts;
 using Data.Repositories;
-using EventGrpcContract;
 using Microsoft.EntityFrameworkCore;
 using Presentation.Services;
 
@@ -9,20 +8,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddGrpc();
+builder.Services.AddSwaggerGen();
 
-builder.WebHost.ConfigureKestrel(x =>
-{
-    x.ListenAnyIP(5018, listenOption =>
-    {
-        listenOption.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
-    });
+//builder.WebHost.ConfigureKestrel(x =>
+//{
+//    x.ListenAnyIP(8585, listenOption =>
+//    {
+//        listenOption.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+//    });
 
-    x.ListenAnyIP(7388, listenOption =>
-    {
-        listenOption.UseHttps();
-        listenOption.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
-    });
-});
+//    x.ListenAnyIP(7388, listenOption =>
+//    {
+//        listenOption.UseHttps();
+//        listenOption.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+//    });
+//});
 
 
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration["ACS:ConnectionString"]));
@@ -31,13 +31,14 @@ builder.Services.AddScoped<IEventRepository, EventRepository>();
 
 builder.Services.AddTransient<EventGrpcService>();
 
-//builder.Services.AddGrpcClient<EventContract.EventContractClient>(options =>
-//{
-//    options.Address = new Uri(builder.Configuration["GrpcSettings:EventSettingUrl"]!);
-//});
-
-
 var app = builder.Build();
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Event API V1");
+    c.RoutePrefix = string.Empty; 
+});
 
 app.MapOpenApi();
 app.UseHttpsRedirection();
