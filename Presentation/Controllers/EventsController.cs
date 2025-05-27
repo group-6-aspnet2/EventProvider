@@ -1,19 +1,26 @@
 ﻿using Buisness.Models;
 using Buisness.Services;
-using EventGrpcContract;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Documentation;
+using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Presentation.Controllers
 {
-    //[Produces("application/json")]
-    //[Consumes("application/json")]
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
+    [Consumes("application/json")]
     public class EventsController(IEventService eventService) : ControllerBase
     {
         private readonly IEventService _eventService = eventService;
 
         [HttpPost]
+        [SwaggerOperation(Summary = "Create new events.")]
+        [SwaggerResponse(200, "Event added to event list successfully.")]
+        [SwaggerResponse(400, "Event request contained invalid properties or missing properties.")]
+        [SwaggerRequestExample(typeof(EventRegistrationForm), typeof(EventRegistrationForm_Example))]
+
         public async Task<IActionResult> CreateEvent(EventRegistrationForm form)
         {
             if (!ModelState.IsValid)
@@ -42,6 +49,10 @@ namespace Presentation.Controllers
 
 
         [HttpGet("{id}")]
+        [SwaggerOperation(Summary = "Returns a specific event.")]
+        [SwaggerResponse(200, "Event recived successfully.")]
+        [SwaggerResponse(400, "Event Id is missing or invalid.")]
+
         public async Task<IActionResult> GetEventById(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -54,7 +65,11 @@ namespace Presentation.Controllers
             return result.Success ? Ok(result) : BadRequest(result.Result);
         }
 
+
+
         [HttpGet]
+        [SwaggerOperation(Summary = "Returns a list of events.")]
+        [SwaggerResponse(200, "Events recived successfully.")]
         public async Task<IActionResult> GetAllEvents()
         {
             var result = await _eventService.GetAllEventsAsync();
@@ -66,19 +81,13 @@ namespace Presentation.Controllers
 
 
         [HttpPut("{id}")]
+        [SwaggerOperation(Summary = "Updates a specific event.")]
+        [SwaggerResponse(200, "Event was updated successfully.")]
+        [SwaggerResponse(400, "Event request contained invalid properties or missing properties.")]
+        [SwaggerRequestExample(typeof(EventRegistrationForm), typeof(EventRegistrationForm_Example))]
+
         public async Task<IActionResult> Update(string id, EventUpdateForm form)
-        {
-            //var authorization = Request.Headers.Authorization[0];
-
-            ///* bearer TOKENNYCKELN - splittningen görs i React */
-            //var token = authorization!.Split(" ")[1];
-
-            //using var http = new HttpClient();
-            //var response = await http.PostAsJsonAsync("http://tokenservice.azurewebsite.net/api/validatetoken", new { token = token });
-            //if (!response.IsSuccessStatusCode)
-            //    return Unauthorized();
-
-
+        {         
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -104,19 +113,12 @@ namespace Presentation.Controllers
 
 
         [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "Deletes a specific event.")]
+        [SwaggerResponse(200, "Event was deleted successfully.")]
+        [SwaggerResponse(400, "Event Id is missing or invalid.")]
+
         public async Task<IActionResult> Delete(string id)
         {
-            //var authorization = Request.Headers.Authorization[0];
-
-            ///* bearer TOKENNYCKELN - splittningen görs i React */
-            //var token = authorization!.Split(" ")[1];
-
-            //using var http = new HttpClient();
-            //var response = await http.PostAsJsonAsync("http://tokenservice.azurewebsite.net/api/validatetoken", new { token = token }); //görs via Grpc istället
-            //if (!response.IsSuccessStatusCode)
-            //    return Unauthorized();
-
-
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
 

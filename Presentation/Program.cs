@@ -4,42 +4,26 @@ using Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Presentation.Services;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddGrpc();
-builder.Services.AddSwaggerGen();
-//    (o =>
-//{
-//    o.SwaggerDoc("v1", new OpenApiInfo
-//    {
-//        Version = "v.1.0",
-//        Title = "Event Service API Documentation",
-//        Description = "Official documentation for Event Service Provider API."
-//    });
+builder.Services.AddSwaggerGen(o =>
+{
+    o.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v.1.0",
+        Title = "Event Service API Documentation",
+        Description = "Official documentation for Event Service Provider API."
+    });
 
-//    //var apiScheme = new OpenApiSecurityScheme
-//    //{
-//    //    Name = "X-API-KEY",
-//    //    Description = "API KEY",
-//    //    In = ParameterLocation.Header,
-//    //    Type = SecuritySchemeType.ApiKey,
-//    //    Scheme = "ApiKeyScheme",
-//    //    Reference = new OpenApiReference
-//    //    {
-//    //        Id = "ApiKey",
-//    //        Type = ReferenceType.SecurityScheme,
-//    //    }
+    o.EnableAnnotations();
+    o.ExampleFilters();
+});
 
-//    //};
-
-//    //o.AddSecurityDefinition("ApiKey", apiScheme);
-//    //o.AddSecurityRequirement(new OpenApiSecurityRequirement
-//    //{
-//    //    { apiScheme, new List<string>() }
-//    //});
-//});
+builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -64,6 +48,7 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 
 builder.Services.AddTransient<EventGrpcService>();
+
 
 var app = builder.Build();
 
