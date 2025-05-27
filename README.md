@@ -36,7 +36,7 @@ Systemet stödjer två roller: `User` och `Admin`. Beroende på roll dirigeras a
 
 Nedan visas ett sekvensdiagram som beskriver inloggning och skapande av ett event:
 
-![Sekvensdiagram](./Sekvenssdiagram%20Event.png)
+![Sekvensdiagram](./images/event-sequence-diagram.png)
 
 ## 🚀 Deployment
 
