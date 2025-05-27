@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
 {
+    //[Produces("application/json")]
+    //[Consumes("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class EventsController(IEventService eventService) : ControllerBase
@@ -66,15 +68,15 @@ namespace Presentation.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, EventUpdateForm form)
         {
-            var authorization = Request.Headers.Authorization[0];
+            //var authorization = Request.Headers.Authorization[0];
 
-            /* bearer TOKENNYCKELN - splittningen görs i React */
-            var token = authorization!.Split(" ")[1];
+            ///* bearer TOKENNYCKELN - splittningen görs i React */
+            //var token = authorization!.Split(" ")[1];
 
-            using var http = new HttpClient();
-            var response = await http.PostAsJsonAsync("http://tokenservice.azurewebsite.net/api/validatetoken", new { token = token });
-            if (!response.IsSuccessStatusCode)
-                return Unauthorized();
+            //using var http = new HttpClient();
+            //var response = await http.PostAsJsonAsync("http://tokenservice.azurewebsite.net/api/validatetoken", new { token = token });
+            //if (!response.IsSuccessStatusCode)
+            //    return Unauthorized();
 
 
             if (!ModelState.IsValid)
@@ -104,15 +106,15 @@ namespace Presentation.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var authorization = Request.Headers.Authorization[0];
+            //var authorization = Request.Headers.Authorization[0];
 
-            /* bearer TOKENNYCKELN - splittningen görs i React */
-            var token = authorization!.Split(" ")[1];
+            ///* bearer TOKENNYCKELN - splittningen görs i React */
+            //var token = authorization!.Split(" ")[1];
 
-            using var http = new HttpClient();
-            var response = await http.PostAsJsonAsync("http://tokenservice.azurewebsite.net/api/validatetoken", new { token = token }); //görs via Grpc istället
-            if (!response.IsSuccessStatusCode)
-                return Unauthorized();
+            //using var http = new HttpClient();
+            //var response = await http.PostAsJsonAsync("http://tokenservice.azurewebsite.net/api/validatetoken", new { token = token }); //görs via Grpc istället
+            //if (!response.IsSuccessStatusCode)
+            //    return Unauthorized();
 
 
             if (string.IsNullOrEmpty(id))

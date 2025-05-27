@@ -74,7 +74,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
             if (entity == null)
                 return new ResponseResult<TEntity> { Success = false, StatusCode = 404, Error = "Entity not found" };
 
-            return new ResponseResult<TEntity> { Success = true, StatusCode = 200 };
+            return new ResponseResult<TEntity> { Success = true, StatusCode = 200, Result = entity };
         }
         catch (Exception ex)
         {
@@ -90,7 +90,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
             if (entity == null)
                 return new ResponseResult { Success = false, StatusCode = 400, Error = "Expression cannot be null" };
 
-            if (await _dbSet.ContainsAsync(entity))
+            if (!await _dbSet.ContainsAsync(entity))
                 return new ResponseResult { Success = false, StatusCode = 404, Error = "Entity not found" };
 
             _dbSet.Update(entity);

@@ -2,6 +2,7 @@ using Buisness.Services;
 using Data.Contexts;
 using Data.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Presentation.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,20 +10,53 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddGrpc();
 builder.Services.AddSwaggerGen();
-
-//builder.WebHost.ConfigureKestrel(x =>
+//    (o =>
 //{
-//    x.ListenAnyIP(8585, listenOption =>
+//    o.SwaggerDoc("v1", new OpenApiInfo
 //    {
-//        listenOption.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+//        Version = "v.1.0",
+//        Title = "Event Service API Documentation",
+//        Description = "Official documentation for Event Service Provider API."
 //    });
 
-//    x.ListenAnyIP(7388, listenOption =>
-//    {
-//        listenOption.UseHttps();
-//        listenOption.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
-//    });
+//    //var apiScheme = new OpenApiSecurityScheme
+//    //{
+//    //    Name = "X-API-KEY",
+//    //    Description = "API KEY",
+//    //    In = ParameterLocation.Header,
+//    //    Type = SecuritySchemeType.ApiKey,
+//    //    Scheme = "ApiKeyScheme",
+//    //    Reference = new OpenApiReference
+//    //    {
+//    //        Id = "ApiKey",
+//    //        Type = ReferenceType.SecurityScheme,
+//    //    }
+
+//    //};
+
+//    //o.AddSecurityDefinition("ApiKey", apiScheme);
+//    //o.AddSecurityRequirement(new OpenApiSecurityRequirement
+//    //{
+//    //    { apiScheme, new List<string>() }
+//    //});
 //});
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.WebHost.ConfigureKestrel(x =>
+    {
+        x.ListenAnyIP(8585, listenOption =>
+        {
+            listenOption.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+        });
+
+        x.ListenAnyIP(7388, listenOption =>
+        {
+            listenOption.UseHttps();
+            listenOption.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+        });
+    });
+}
 
 
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration["ACS:ConnectionString"]));
